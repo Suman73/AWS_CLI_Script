@@ -2,10 +2,11 @@
 
 # Variables
 INSTANCE_ID=""  # Replace with your EC2 instance ID
+LAUNCH_TEMPLATE_ID=""  # Replace with your Launch Template ID
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")  # Current timestamp in YYYYMMDDHHMMSS format
 AMI_NAME="chatbot_test_server-AMI-${INSTANCE_ID}-${TIMESTAMP}"  # AMI name with prefix, instance ID, and timestamp
 AMI_DESCRIPTION="AMI created from EC2 instance $INSTANCE_ID on $TIMESTAMP"
-LAUNCH_TEMPLATE_ID=""  # Replace with your Launch Template ID
+
 
 # Create the AMI
 CREATE_AMI_OUTPUT=$(aws ec2 create-image --instance-id $INSTANCE_ID --name "$AMI_NAME" --description "$AMI_DESCRIPTION" --query 'ImageId' --output text)
