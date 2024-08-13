@@ -41,7 +41,7 @@ echo "Default version of Launch Template updated to version $LATEST_VERSION"
 
 # Start an instance refresh in the Auto Scaling Group
 INSTANCE_REFRESH_ID=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTOSCALING_GROUP_NAME \
-  --preferences '{"MinHealthyPercentage":100,"InstanceWarmup":300}' \
+  --preferences '{"MinHealthyPercentage":100,"InstanceWarmup":300, "SkipMatching":true}' \
   --desired-configuration "{\"LaunchTemplate\":{\"LaunchTemplateId\":\"$LAUNCH_TEMPLATE_ID\",\"Version\":\"$LATEST_VERSION\"}}" \
   --strategy "Rolling" \
   --query 'InstanceRefreshId' --output text)
