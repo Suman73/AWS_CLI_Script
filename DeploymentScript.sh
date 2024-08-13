@@ -19,6 +19,16 @@ echo "Waiting for AMI to become available..."
 aws ec2 wait image-available --image-ids $CREATE_AMI_OUTPUT
 echo "AMI is now available."
 
+# Create a new version of the Launch Template
+NEW_VERSION_OUTPUT=$(aws ec2 create-launch-template-version --launch-template-id $LAUNCH_TEMPLATE_ID \
+  --source-version \$Latest \
+  --version-description "New version with AMI $CREATE_AMI_OUTPUT" \
+  --launch-template-data "{\"ImageId\":\"$CREATE_AMI_OUTPUT\"}" \
+  --query 'LaunchTemplateVersion.VersionNumber' --output text)
+  
+# Print the new Launch Template Version
+echo "New Launch Template Version: $NEW_VERSION_OUTPUT"
+
 # Get the latest launch template version
 LATEST_VERSION=$(aws ec2 describe-launch-templates --launch-template-ids $LAUNCH_TEMPLATE_ID --query 'LaunchTemplates[0].LatestVersionNumber' --output text)
 
@@ -26,15 +36,8 @@ LATEST_VERSION=$(aws ec2 describe-launch-templates --launch-template-ids $LAUNCH
 aws ec2 modify-launch-template --launch-template-id $LAUNCH_TEMPLATE_ID --default-version $LATEST_VERSION
 echo "Default version of Launch Template updated to version $LATEST_VERSION"
 
-# Create a new version of the Launch Template
-NEW_VERSION_OUTPUT=$(aws ec2 create-launch-template-version --launch-template-id $LAUNCH_TEMPLATE_ID \
-  --source-version \$Latest \
-  --version-description "New version with AMI $CREATE_AMI_OUTPUT" \
-  --launch-template-data "{\"ImageId\":\"$CREATE_AMI_OUTPUT\"}" \
-  --query 'LaunchTemplateVersion.VersionNumber' --output text)
 
-# Print the new Launch Template Version
-echo "New Launch Template Version: $NEW_VERSION_OUTPUT"
+
 
 # Start an instance refresh in the Auto Scaling Group
 INSTANCE_REFRESH_ID=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTOSCALING_GROUP_NAME \
